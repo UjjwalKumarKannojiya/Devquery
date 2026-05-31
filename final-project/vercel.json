@@ -1,0 +1,24 @@
+{
+  "buildCommand": "npm run build",
+  "dev": "npm run dev",
+  "installCommand": "npm install",
+  "env": {
+    "DATABASE_URL": {
+      "description": "PostgreSQL connection string from Neon"
+    },
+    "BETTER_AUTH_SECRET": {
+      "description": "Secret for Better Auth (generate: openssl rand -base64 32)"
+    },
+    "NEXTAUTH_SECRET": {
+      "description": "Secret for NextAuth (generate: openssl rand -base64 32)"
+    },
+    "NEXTAUTH_URL": {
+      "description": "Your production URL"
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key for AI answers"
+    }
+  },
+  "framework": "nextjs",
+  "nodeVersion": "20.x"
+}
