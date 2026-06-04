@@ -8,7 +8,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const authResult = await requireAuth(request);
-    if (authResult.error) return authResult.error;
+
+    if (authResult.error) {
+      return authResult.error;
+    }
 
     const { userId } = authResult;
 
@@ -17,7 +20,22 @@ export async function POST(request: NextRequest) {
 
     if (!questionId || !content) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        {
+          success: false,
+          error: "Missing required fields",
+        },
+        { status: 400 }
+      );
+    }
+
+    const parsedQuestionId = Number.parseInt(String(questionId), 10);
+
+    if (Number.isNaN(parsedQuestionId)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid question ID",
+        },
         { status: 400 }
       );
     }
@@ -25,7 +43,7 @@ export async function POST(request: NextRequest) {
     const [newAnswer] = await db
       .insert(answers)
       .values({
-        questionId: parseInt(questionId),
+        questionId: parsedQuestionId,
         content,
         authorId: userId,
         isAiGenerated: false,
@@ -40,19 +58,25 @@ export async function POST(request: NextRequest) {
       .where(eq(userProfile.userId, userId));
 
     const question = await db.query.questions.findFirst({
-      where: (questions, { eq }) => eq(questions.id, questionId),
+      where: (questions, { eq }) => eq(questions.id, parsedQuestionId),
     });
 
     if (question) {
-      
-      await inngest.send({
-        name: "answer.created",
-        data: {
-          questionId,
-          userId: question.authorId,
-          answerType: "human",
-        },
-      });
+      try {
+        await inngest.send({
+          name: "answer.created",
+          data: {
+            questionId: parsedQuestionId,
+            userId: question.authorId,
+            answerType: "human",
+          },
+        });
+      } catch (inngestError) {
+        console.error(
+          "Failed to send Inngest answer.created event:",
+          inngestError
+        );
+      }
     }
 
     return NextResponse.json({
@@ -61,10 +85,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error creating answer:", error);
+
     return NextResponse.json(
-      { success: false, error: "Failed to create answer" },
+      {
+        success: false,
+        error: "Failed to create answer",
+      },
       { status: 500 }
     );
   }
 }
-

@@ -16,9 +16,19 @@ export async function POST(
 
     const { id } = await params;
     const questionId = parseInt(id);
-    const { voteType } = await request.json();
 
-    if (!voteType || !["upvote", "downvote"].includes(voteType)) {
+    if (Number.isNaN(questionId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid question id" },
+        { status: 400 }
+      );
+    }
+
+    const { voteType } = (await request.json()) as {
+      voteType?: string;
+    };
+
+    if (voteType !== "upvote" && voteType !== "downvote") {
       return NextResponse.json(
         { success: false, error: "Invalid vote type" },
         { status: 400 }
@@ -50,82 +60,98 @@ export async function POST(
       );
     }
 
-    if (existingVote) {
-      
-      if (existingVote.voteType === voteType) {
-        const voteChange = voteType === "upvote" ? -1 : 1;
-        const repChange = voteType === "upvote" ? -5 : 2;
+    await db.transaction(async (tx) => {
+      if (existingVote) {
+        if (existingVote.voteType === voteType) {
+          // Same vote clicked again = remove vote
+          const voteChange = voteType === "upvote" ? -1 : 1;
+          const repChange = voteType === "upvote" ? -5 : 2;
 
-        await db.batch([
-          db
+          await tx
             .delete(questionVotes)
             .where(
               and(
                 eq(questionVotes.questionId, questionId),
                 eq(questionVotes.userId, userId)
               )
-            ),
-          db
-            .update(questions)
-            .set({ votes: sql`${questions.votes} + ${voteChange}` })
-            .where(eq(questions.id, questionId)),
-          db
-            .update(userProfile)
-            .set({
-              reputation: sql`${userProfile.reputation} + ${repChange}`,
-            })
-            .where(eq(userProfile.userId, question.authorId)),
-        ]);
-      } else {
-        
-        const voteChange = voteType === "upvote" ? 2 : -2;
-        const repChange = voteType === "upvote" ? 7 : -7;
+            );
 
-        await db.batch([
-          db
+          await tx
+            .update(questions)
+            .set({
+              votes: sql`${questions.votes} + ${voteChange}`,
+            })
+            .where(eq(questions.id, questionId));
+
+          if (question.authorId) {
+            await tx
+              .update(userProfile)
+              .set({
+                reputation: sql`${userProfile.reputation} + ${repChange}`,
+              })
+              .where(eq(userProfile.userId, question.authorId));
+          }
+        } else {
+          // Changed vote: upvote -> downvote or downvote -> upvote
+          const voteChange = voteType === "upvote" ? 2 : -2;
+          const repChange = voteType === "upvote" ? 7 : -7;
+
+          await tx
             .update(questionVotes)
-            .set({ voteType: voteType as "upvote" | "downvote" })
+            .set({
+              voteType,
+            })
             .where(
               and(
                 eq(questionVotes.questionId, questionId),
                 eq(questionVotes.userId, userId)
               )
-            ),
-          db
+            );
+
+          await tx
             .update(questions)
-            .set({ votes: sql`${questions.votes} + ${voteChange}` })
-            .where(eq(questions.id, questionId)),
-          db
+            .set({
+              votes: sql`${questions.votes} + ${voteChange}`,
+            })
+            .where(eq(questions.id, questionId));
+
+          if (question.authorId) {
+            await tx
+              .update(userProfile)
+              .set({
+                reputation: sql`${userProfile.reputation} + ${repChange}`,
+              })
+              .where(eq(userProfile.userId, question.authorId));
+          }
+        }
+      } else {
+        // New vote
+        const voteChange = voteType === "upvote" ? 1 : -1;
+        const repChange = voteType === "upvote" ? 5 : -2;
+
+        await tx.insert(questionVotes).values({
+          questionId,
+          userId,
+          voteType,
+        });
+
+        await tx
+          .update(questions)
+          .set({
+            votes: sql`${questions.votes} + ${voteChange}`,
+          })
+          .where(eq(questions.id, questionId));
+
+        if (question.authorId) {
+          await tx
             .update(userProfile)
             .set({
               reputation: sql`${userProfile.reputation} + ${repChange}`,
             })
-            .where(eq(userProfile.userId, question.authorId)),
-        ]);
+            .where(eq(userProfile.userId, question.authorId));
+        }
       }
-    } else {
-      
-      const voteChange = voteType === "upvote" ? 1 : -1;
-      const repChange = voteType === "upvote" ? 5 : -2;
-
-      await db.batch([
-        db.insert(questionVotes).values({
-          questionId,
-          userId,
-          voteType: voteType as "upvote" | "downvote",
-        }),
-        db
-          .update(questions)
-          .set({ votes: sql`${questions.votes} + ${voteChange}` })
-          .where(eq(questions.id, questionId)),
-        db
-          .update(userProfile)
-          .set({
-            reputation: sql`${userProfile.reputation} + ${repChange}`,
-          })
-          .where(eq(userProfile.userId, question.authorId)),
-      ]);
-    }
+    });
 
     const updatedQuestion = await db.query.questions.findFirst({
       where: eq(questions.id, questionId),

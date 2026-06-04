@@ -2,7 +2,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
+@import "tailwindcss";
 
+@plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -291,11 +293,11 @@
 }
 
 @utility liquid-glass {
-  @apply bg-gradient-to-br from-white/40 to-white/10 backdrop-blur-2xl border border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-2xl relative overflow-hidden;
+  @apply bg-linear-to-br from-white/40 to-white/10 backdrop-blur-2xl border border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-2xl relative overflow-hidden;
 }
 .liquid-glass::before {
   content: '';
-  @apply absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none;
+  @apply absolute inset-0 bg-linear-to-tr from-transparent via-white/20 to-transparent pointer-events-none;
 }
 .dark .liquid-glass {
   @apply from-black/40 to-black/10 border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)];

@@ -16,7 +16,7 @@ export function Header() {
   const { data: session, isPending } = useSession();
 
   return (
-    <header className="relative border-b border-border z-50 glass-card sticky top-0">
+    <header className=" border-b border-border z-50 glass-card sticky top-0">
       <div className="px-4 sm:px-6">
         <div className="max-w-[1200px] mx-auto">
           <div className="flex items-center justify-between gap-4 h-16 md:h-20">

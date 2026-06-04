@@ -4,17 +4,35 @@ import { inngest } from "@/lib/services/inngest";
 import { answers, questions, questionTags, tags } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 
+type QuestionCreatedEventData = {
+  questionId: number;
+  title: string;
+  body: string;
+  images?: string[];
+  authorId: string | number;
+};
+
+type VisionMessageContent =
+  | string
+  | Array<
+      | { type: "text"; text: string }
+      | { type: "image_url"; image_url: { url: string } }
+    >;
+
 export const generateAIAnswer = inngest.createFunction(
   {
     id: "generate-ai-answer",
     name: "Generate AI Answer for Question",
+    triggers: {
+      event: "question.created",
+    },
     concurrency: {
-      limit: 10, // Max 10 concurrent AI calls
+      limit: 10,
     },
   },
-  { event: "question.created" },
   async ({ event, step }) => {
-    const { questionId, title, body, images, authorId } = event.data;
+    const { questionId, title, body, images, authorId } =
+      event.data as QuestionCreatedEventData;
 
     // Step 1: Generate presigned URLs for images if they exist
     const imageUrls = await step.run("generate-image-urls", async () => {
@@ -22,13 +40,15 @@ export const generateAIAnswer = inngest.createFunction(
         return [];
       }
 
-      const urls = [];
+      const urls: string[] = [];
+
       for (const imageKey of images) {
         try {
           const result = await apiRequest("/api/upload/image-url", {
             method: "POST",
             body: JSON.stringify({ key: imageKey }),
           });
+
           urls.push((result as { url: string }).url);
         } catch (error) {
           console.error(
@@ -38,10 +58,11 @@ export const generateAIAnswer = inngest.createFunction(
           );
         }
       }
+
       return urls;
     });
 
-    // Step 2: AI Tag Generation using GPT-5-mini
+    // Step 2: AI Tag Generation
     const tagsResult = await step.ai.infer("generate-tags", {
       model: step.ai.models.openai({
         model: "gpt-5-mini",
@@ -50,7 +71,8 @@ export const generateAIAnswer = inngest.createFunction(
         messages: [
           {
             role: "system",
-            content: `You are a tag generator for a Q&A platform. Return ONLY a JSON array of 3-5 relevant tags (lowercase, hyphenated). Focus on: programming languages, frameworks, technologies, concepts. Example: ["react", "javascript", "hooks"]`,
+            content:
+              'You are a tag generator for a Q&A platform. Return ONLY a JSON array of 3-5 relevant tags lowercase and hyphenated. Focus on programming languages, frameworks, technologies, and concepts. Example: ["react", "javascript", "hooks"]',
           },
           {
             role: "user",
@@ -60,51 +82,48 @@ export const generateAIAnswer = inngest.createFunction(
       },
     });
 
-    // Parse tags - handle markdown code blocks and plain JSON
     let generatedTags: string[] = [];
+
     try {
       let content = tagsResult.choices[0].message.content || "[]";
 
-      // Remove markdown code blocks if present (```json ... ```)
       content = content
         .replace(/^```(?:json)?\s*\n?/gm, "")
         .replace(/\n?```$/gm, "")
         .trim();
 
-      // Parse the JSON array
-      const parsed: string[] = JSON.parse(content);
+      const parsed = JSON.parse(content);
 
       if (Array.isArray(parsed)) {
-        generatedTags = parsed.map((tag) => String(tag).toLowerCase());
+        generatedTags = parsed
+          .map((tag) => String(tag).toLowerCase().trim())
+          .filter(Boolean);
       } else {
         console.warn("Expected array of tags, got:", typeof parsed);
         generatedTags = [];
       }
-    } catch (e) {
+    } catch (error) {
       console.error(
         "Failed to parse tags:",
-        e,
+        error,
         "Content:",
         tagsResult.choices[0].message.content
       );
       generatedTags = [];
     }
 
-    // Step 3: AI Answer Generation with Vision Support
-    // Note: Inngest's types don't support vision content arrays, but the API does
-    // We use type assertion to work around this limitation
-    type VisionMessageContent =
-      | string
-      | Array<
-          | { type: "text"; text: string }
-          | { type: "image_url"; image_url: { url: string } }
-        >;
+    // Remove duplicate tags
+    generatedTags = Array.from(new Set(generatedTags));
 
+    // Step 3: AI Answer Generation with Vision Support
     const userMessageContent: VisionMessageContent =
       imageUrls && imageUrls.length > 0
         ? [
-            { type: "text" as const, text: `${title}\n\n${body}` },
-            ...imageUrls.map((url: string) => ({
+            {
+              type: "text",
+              text: `${title}\n\n${body}`,
+            },
+            ...imageUrls.map((url) => ({
               type: "image_url" as const,
               image_url: { url },
             })),
@@ -119,38 +138,45 @@ export const generateAIAnswer = inngest.createFunction(
         messages: [
           {
             role: "system",
-            content: `You are an expert programming assistant on a Q&A platform similar to Stack Overflow. Provide accurate, helpful, and well-structured answers. Include:
+            content: `You are an expert programming assistant on a Q&A platform similar to Stack Overflow. Provide accurate, helpful, and well-structured answers.
+
+Include:
 - Clear explanation
 - Code examples with proper formatting
 - Best practices
 - Potential pitfalls to avoid
-${imageUrls && imageUrls.length > 0 ? "- Analyze any provided images and reference them in your answer" : ""}
+${
+  imageUrls && imageUrls.length > 0
+    ? "- Analyze any provided images and reference them in your answer"
+    : ""
+}
+
 Format your answer in Markdown.`,
           },
           {
             role: "user",
-            content: userMessageContent as string, // Type assertion: API supports arrays but Inngest types don't
+            content: userMessageContent as any,
           },
         ],
       },
     });
 
-    const aiAnswerContent = answerResult.choices[0].message.content;
+    const aiAnswerContent =
+      answerResult.choices[0].message.content ||
+      "AI could not generate an answer for this question.";
 
     // Step 4: Save to Database
     await step.run("save-to-database", async () => {
-      // Upsert tags and collect their IDs
-      const tagIds = [];
+      const tagIds: number[] = [];
 
       for (const tagName of generatedTags) {
         const slug = tagName;
 
-        // Upsert tag in a single query
         const [tag] = await db
           .insert(tags)
           .values({
             name: tagName,
-            slug: slug,
+            slug,
             usageCount: 1,
           })
           .onConflictDoUpdate({
@@ -161,10 +187,11 @@ Format your answer in Markdown.`,
           })
           .returning();
 
-        tagIds.push(tag.id);
+        if (tag?.id) {
+          tagIds.push(tag.id);
+        }
       }
 
-      // Batch insert all junction table records at once
       if (tagIds.length > 0) {
         await db
           .insert(questionTags)
@@ -174,10 +201,9 @@ Format your answer in Markdown.`,
               tagId,
             }))
           )
-          .onConflictDoNothing(); // Prevent duplicate entries
+          .onConflictDoNothing();
       }
 
-      // Update question to mark AI answer as generated
       await db
         .update(questions)
         .set({
@@ -185,10 +211,9 @@ Format your answer in Markdown.`,
         })
         .where(eq(questions.id, questionId));
 
-      // Insert AI answer
       await db.insert(answers).values({
         questionId,
-        content: aiAnswerContent!,
+        content: aiAnswerContent,
         isAiGenerated: true,
         authorId: null,
       });
@@ -210,7 +235,7 @@ Format your answer in Markdown.`,
       success: true,
       questionId,
       tagsGenerated: generatedTags,
-      answerLength: aiAnswerContent?.length,
+      answerLength: aiAnswerContent.length,
     };
   }
 );

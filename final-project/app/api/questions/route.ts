@@ -9,8 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+
+    const page = Number.parseInt(searchParams.get("page") || "1", 10);
+    const limit = Number.parseInt(searchParams.get("limit") || "20", 10);
     const offset = (page - 1) * limit;
 
     const questionsData = await db.query.questions.findMany({
@@ -51,7 +52,9 @@ export async function GET(request: NextRequest) {
     }));
 
     const [{ count }] = await db
-      .select({ count: sql<number>`cast(count(*) as integer)` })
+      .select({
+        count: sql<number>`cast(count(*) as integer)`,
+      })
       .from(questions)
       .where(eq(questions.isDeleted, false));
 
@@ -69,8 +72,12 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching questions:", error);
+
     return NextResponse.json(
-      { success: false, error: "Failed to fetch questions" },
+      {
+        success: false,
+        error: "Failed to fetch questions",
+      },
       { status: 500 }
     );
   }
@@ -79,12 +86,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authResult = await requireAuth(request);
-    if (authResult.error) return authResult.error;
+
+    if (authResult.error) {
+      return authResult.error;
+    }
 
     const { userId } = authResult;
 
-    const body = await request.json();
-    const validationResult = askQuestionSchema.safeParse(body);
+    const requestBody = await request.json();
+    const validationResult = askQuestionSchema.safeParse(requestBody);
 
     if (!validationResult.success) {
       return NextResponse.json(
@@ -112,20 +122,27 @@ export async function POST(request: NextRequest) {
     await db
       .update(userProfile)
       .set({
-        questionsCount: sql`${userProfile.questionsCount} + 1`
+        questionsCount: sql`${userProfile.questionsCount} + 1`,
       })
       .where(eq(userProfile.userId, userId));
 
-    await inngest.send({
-      name: "question.created",
-      data: {
-        questionId: newQuestion.id,
-        title: newQuestion.title,
-        body: newQuestion.body,
-        images: newQuestion.images,
-        authorId: newQuestion.authorId,
-      },
-    });
+    try {
+      await inngest.send({
+        name: "question.created",
+        data: {
+          questionId: newQuestion.id,
+          title: newQuestion.title,
+          body: newQuestion.body,
+          images: newQuestion.images || [],
+          authorId: newQuestion.authorId,
+        },
+      });
+    } catch (inngestError) {
+      console.error(
+        "Failed to send Inngest question.created event:",
+        inngestError
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -133,10 +150,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error creating question:", error);
+
     return NextResponse.json(
-      { success: false, error: "Failed to create question" },
+      {
+        success: false,
+        error: "Failed to create question",
+      },
       { status: 500 }
     );
   }
 }
-

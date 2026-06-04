@@ -17,6 +17,13 @@ export async function DELETE(
     const { id } = await params;
     const answerId = parseInt(id);
 
+    if (Number.isNaN(answerId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid answer id" },
+        { status: 400 }
+      );
+    }
+
     const answer = await db.query.answers.findFirst({
       where: eq(answers.id, answerId),
     });
@@ -30,7 +37,10 @@ export async function DELETE(
 
     if (answer.authorId !== userId) {
       return NextResponse.json(
-        { success: false, error: "Only the answer author can delete this answer" },
+        {
+          success: false,
+          error: "Only the answer author can delete this answer",
+        },
         { status: 403 }
       );
     }
@@ -42,57 +52,28 @@ export async function DELETE(
       );
     }
 
-    if (answer.isAccepted && answer.authorId) {
-      
-      await db.batch([
-        db
-          .update(answers)
-          .set({ isDeleted: true })
-          .where(eq(answers.id, answerId)),
-        db
-          .update(userProfile)
-          .set({
-            answersCount: sql`${userProfile.answersCount} - 1`,
-          })
-          .where(eq(userProfile.userId, answer.authorId)),
-        db
-          .update(questions)
-          .set({ acceptedAnswerId: null })
-          .where(eq(questions.id, answer.questionId)),
-      ]);
-    } else if (answer.isAccepted) {
-      
-      await db.batch([
-        db
-          .update(answers)
-          .set({ isDeleted: true })
-          .where(eq(answers.id, answerId)),
-        db
-          .update(questions)
-          .set({ acceptedAnswerId: null })
-          .where(eq(questions.id, answer.questionId)),
-      ]);
-    } else if (answer.authorId) {
-      
-      await db.batch([
-        db
-          .update(answers)
-          .set({ isDeleted: true })
-          .where(eq(answers.id, answerId)),
-        db
-          .update(userProfile)
-          .set({
-            answersCount: sql`${userProfile.answersCount} - 1`,
-          })
-          .where(eq(userProfile.userId, answer.authorId)),
-      ]);
-    } else {
-      
-      await db
+    await db.transaction(async (tx) => {
+      await tx
         .update(answers)
         .set({ isDeleted: true })
         .where(eq(answers.id, answerId));
-    }
+
+      if (answer.authorId) {
+        await tx
+          .update(userProfile)
+          .set({
+            answersCount: sql`${userProfile.answersCount} - 1`,
+          })
+          .where(eq(userProfile.userId, answer.authorId));
+      }
+
+      if (answer.isAccepted) {
+        await tx
+          .update(questions)
+          .set({ acceptedAnswerId: null })
+          .where(eq(questions.id, answer.questionId));
+      }
+    });
 
     return NextResponse.json({
       success: true,
