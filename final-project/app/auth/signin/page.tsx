@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import GlassCard from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn } from "@/lib/auth/client";
@@ -70,8 +71,9 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 px-4 sm:px-0">
-      <div className="bg-card p-6 sm:p-8 rounded shadow-sm">
+    <div className="py-12 flex flex-col justify-center min-h-[calc(100vh-80px)]">
+      <div className="max-w-md w-full mx-auto px-4 sm:px-0">
+        <GlassCard className="p-6 sm:p-8">
         <h1 className="font-outfit text-[22px] leading-[1.45] font-bold text-card-foreground mb-2 text-center">
           Sign In
         </h1>
@@ -136,7 +138,7 @@ export default function SignInPage() {
 
           <Button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+            className="glow-button w-full"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Signing in..." : "Sign In"}
@@ -208,6 +210,7 @@ export default function SignInPage() {
             Sign up
           </Link>
         </p>
+        </GlassCard>
       </div>
     </div>
   );

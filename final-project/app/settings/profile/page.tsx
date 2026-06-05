@@ -9,7 +9,11 @@ export default function ProfileSettingsPage() {
   const router = useRouter();
 
   return (
-    <div className="max-w-4xl mx-auto py-6 sm:py-8 px-4 sm:px-0">
+    <section className="relative min-h-screen glass flex flex-col py-12 px-4">
+      <div className="absolute inset-0 -z-10">
+        <div className="w-96 h-96 bg-blue-500 rounded-full opacity-20 animate-blob animation-delay-2000"></div>
+      </div>
+      <div className="max-w-4xl w-full mx-auto">
       <div className="mb-6 sm:mb-8">
         <Button
           variant="ghost"
@@ -29,7 +33,8 @@ export default function ProfileSettingsPage() {
       <div className="space-y-6">
         <ProfileEditForm />
       </div>
-    </div>
+      </div>
+    </section>
   );
 }
 

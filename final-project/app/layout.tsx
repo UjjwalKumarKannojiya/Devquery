@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="transition-colors duration-500">
       <head>
         <link rel="canonical" href="https://devquery-forum.com" />
         <meta name="google-site-verification" content="your-verification-code" />
@@ -80,7 +80,7 @@ export default function RootLayout({
             <PostHogPageView />
           </Suspense>
           <Header />
-          <main className="px-4 sm:px-6 py-6 sm:py-8 glass">
+          <main className="px-4 sm:px-6 py-6 sm:py-8">
             <div className="max-w-[1200px] mx-auto">{children}</div>
           </main>
           <Toaster />

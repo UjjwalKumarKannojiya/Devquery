@@ -4,11 +4,10 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="max-w-4xl mx-auto">
-      {}
-      <div className="text-center py-16 md:py-20">
-        <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4 text-foreground leading-tight">
-          Get Instant AI-Powered Answers
+    <>
+      <div className="relative flex flex-col items-center justify-center text-center py-20 md:py-32 overflow-hidden">
+        <h1 className="font-heading text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+          <span className="glow-text">Instant AI-Powered</span> Answers
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
           Ask any coding question and receive instant AI-generated answers
@@ -16,24 +15,21 @@ export default function HomePage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/questions/ask">
-            <Button
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full sm:w-auto"
-            >
+            <Button className="glow-button">
               Ask a Question
             </Button>
           </Link>
           <Link href="/questions">
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
+            <Button variant="outline" className="border-border hover:bg-accent rounded-lg text-base">
               Browse Questions
             </Button>
           </Link>
         </div>
       </div>
 
-      {}
+
       <div className="grid md:grid-cols-3 gap-6 mt-16">
-        <div className="bg-card p-6 rounded shadow-sm">
+        <div className="surface p-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
               <Bot className="h-5 w-5 text-muted-foreground" />
@@ -48,7 +44,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="bg-card p-6 rounded shadow-sm">
+        <div className="surface p-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
               <Tags className="h-5 w-5 text-muted-foreground" />
@@ -62,7 +58,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="bg-card p-6 rounded shadow-sm">
+        <div className="surface p-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
               <Users className="h-5 w-5 text-muted-foreground" />
@@ -76,7 +72,7 @@ export default function HomePage() {
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

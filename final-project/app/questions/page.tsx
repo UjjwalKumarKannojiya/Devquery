@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import GlassCard from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -33,7 +34,7 @@ export default function QuestionsPage() {
   const pagination = data?.data?.pagination;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="py-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
         <div className="space-y-1">
           <h1 className="font-heading text-3xl font-bold text-foreground">
@@ -44,7 +45,7 @@ export default function QuestionsPage() {
           </p>
         </div>
         <Link href="/questions/ask" className="w-full md:w-auto">
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full">
+          <Button className="glow-button w-full md:w-auto">
             Ask Question
           </Button>
         </Link>
@@ -52,9 +53,9 @@ export default function QuestionsPage() {
 
       <div className="space-y-4">
         {questions.map((question) => (
-          <div
+          <GlassCard
             key={question.id}
-            className="glass-card p-6 hover:shadow-lg transition-shadow"
+            className="p-6 hover:shadow-lg transition-shadow"
           >
             <Link href={`/questions/${question.id}`}>
               <h2 className="text-xl font-semibold mb-2 text-card-foreground hover:text-muted-foreground transition-colors">
@@ -96,7 +97,7 @@ export default function QuestionsPage() {
                 </span>
               </div>
             </div>
-          </div>
+          </GlassCard>
         ))}
       </div>
 

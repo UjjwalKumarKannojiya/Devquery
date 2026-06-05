@@ -1,5 +1,7 @@
 "use client";
 
+import GlassCard from "@/components/ui/GlassCard";
+
 import { ImageUpload } from "@/components/image-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +52,9 @@ export default function AskQuestionPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="py-6">
+      <div className="max-w-3xl w-full mx-auto px-4">
+        <GlassCard className="p-6 md:p-8">
       <h1 className="font-heading text-3xl font-bold mb-2 text-foreground">
         Ask a Public Question
       </h1>
@@ -110,7 +114,7 @@ export default function AskQuestionPage() {
           />
         </div>
 
-        <div className="glass-card p-4 sm:p-6">
+        <div className="surface p-4 sm:p-6">
           <h3 className="font-semibold mb-2 text-card-foreground">
             What happens next?
           </h3>
@@ -126,7 +130,7 @@ export default function AskQuestionPage() {
           <Button
             type="submit"
             disabled={isSubmitting || createQuestionMutation.isPending}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full sm:w-auto"
+            className="glow-button w-full sm:w-auto"
           >
             {isSubmitting || createQuestionMutation.isPending
               ? "Submitting..."
@@ -142,6 +146,8 @@ export default function AskQuestionPage() {
           </Button>
         </div>
       </form>
+        </GlassCard>
+      </div>
     </div>
   );
 }

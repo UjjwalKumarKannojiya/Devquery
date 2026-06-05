@@ -45,7 +45,7 @@ export function ProfileEditForm() {
   }
 
   return (
-    <Card className="max-w-2xl mx-auto glass-card">
+    <Card className="max-w-2xl mx-auto surface">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Edit Profile</CardTitle>
         <CardDescription>
@@ -120,7 +120,7 @@ export function ProfileEditForm() {
             </div>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting} className="glow-button w-full">
             {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </form>

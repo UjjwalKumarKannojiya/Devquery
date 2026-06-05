@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +17,7 @@ export function Header() {
   const { data: session, isPending } = useSession();
 
   return (
-    <header className=" border-b border-border z-50 glass-card sticky top-0">
+    <header className="border-b border-border z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0">
       <div className="px-4 sm:px-6">
         <div className="max-w-[1200px] mx-auto">
           <div className="flex items-center justify-between gap-4 h-16 md:h-20">
@@ -24,7 +25,7 @@ export function Header() {
             <div className="min-w-0 flex-1">
               <Link
                 href="/"
-                className="text-lg sm:text-xl font-outfit font-bold text-foreground truncate px-3 py-1 liquid-glass inline-block"
+                className="text-lg sm:text-xl font-outfit font-bold truncate px-3 py-1 glow-text inline-block"
               >
                 DevQuery Forum
               </Link>
@@ -56,10 +57,11 @@ export function Header() {
             {/* Actions */}
             <div className="hidden md:flex flex-1 items-center justify-end gap-3">
               <Link href="/questions/ask">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+                <Button className="glow-button">
                   Ask Question
                 </Button>
               </Link>
+              <ThemeToggle />
 
               {isPending ? (
                 <Button variant="outline" disabled className="text-sm">
@@ -103,7 +105,7 @@ export function Header() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="border-border text-foreground"
+                    className="border-border text-foreground bg-white/5 backdrop-blur-sm"
                     aria-label="Open navigation menu"
                   >
                     <Menu className="h-5 w-5" />

@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import GlassCard from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { type QuestionWithAuthor } from "@/lib/api";
 import { useSearch } from "@/lib/queries";
@@ -42,7 +43,11 @@ export default function SearchClient() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <section className="relative min-h-screen flex flex-col pt-12 px-4 glass overflow-hidden">
+      <div className="absolute inset-0 -z-10">
+        <div className="w-96 h-96 bg-blue-500 rounded-full opacity-20 animate-blob animation-delay-2000"></div>
+      </div>
+      <div className="max-w-4xl w-full mx-auto">
       <h1 className="font-heading text-3xl font-bold mb-6 text-foreground">
         Search Questions
       </h1>
@@ -59,7 +64,7 @@ export default function SearchClient() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold w-full sm:w-auto"
+            className="liquid-glass w-full sm:w-auto text-base font-medium px-6 text-white"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -87,7 +92,7 @@ export default function SearchClient() {
       <div className="space-y-4">
         {searchResults?.data.questions.map((result: QuestionWithAuthor) => (
           <Link key={result.id} href={`/questions/${result.id}`}>
-            <div className="glass-card p-4 hover:shadow-lg transition-shadow">
+            <GlassCard className="p-4 hover:shadow-lg transition-shadow">
               <h3 className="text-xl font-semibold mb-2 text-card-foreground">
                 {result.title}
               </h3>
@@ -112,7 +117,7 @@ export default function SearchClient() {
                   {formatDistanceToNow(new Date(result.createdAt))} ago
                 </span>
               </div>
-            </div>
+            </GlassCard>
           </Link>
         ))}
 
@@ -130,7 +135,8 @@ export default function SearchClient() {
             </div>
           )}
       </div>
-    </div>
+      </div>
+    </section>
   );
 }
 

@@ -137,7 +137,12 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6">
+    <section className="relative min-h-screen glass flex flex-col py-12 px-4">
+      <div className="absolute inset-0 -z-10">
+        <div className="w-96 h-96 bg-blue-500 rounded-full opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="w-96 h-96 bg-purple-500 rounded-full opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6">
       {}
       <div className="mb-8">
         <Button
@@ -174,7 +179,7 @@ export default function BillingPage() {
                 <Button
                   onClick={handleManageSubscription}
                   disabled={isLoading}
-                  className="bg-primary hover:bg-primary/90"
+                  className="liquid-glass text-white font-medium px-6 py-2"
                 >
                   {isLoading ? (
                     <>
@@ -240,7 +245,7 @@ export default function BillingPage() {
                   }}
                   disabled={isLoading || plan.name === "Starter"}
                   variant={plan.popular ? "default" : "outline"}
-                  className={`w-full ${plan.popular ? "bg-primary hover:bg-primary/90" : ""}`}
+                  className={`w-full ${plan.popular ? "liquid-glass text-white font-medium py-2.5" : ""}`}
                 >
                   {isLoading && plan.priceId ? (
                     <>
@@ -289,7 +294,8 @@ export default function BillingPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </section>
   );
 }
 

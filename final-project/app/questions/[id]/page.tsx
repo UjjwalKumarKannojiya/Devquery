@@ -1,18 +1,23 @@
 "use client";
 
 import { ImageDisplay } from "@/components/image-display";
+import GlassCard from "@/components/ui/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { VoteButtons } from "@/components/vote-buttons";
 import { useSession } from "@/lib/auth/client";
-import { useCreateAnswer, useAcceptAnswer, useDeleteAnswer } from "@/lib/mutations";
+import {
+  useAcceptAnswer,
+  useCreateAnswer,
+  useDeleteAnswer,
+} from "@/lib/mutations";
 import { useQuestion } from "@/lib/queries";
 import { submitAnswerSchema } from "@/lib/validations/question";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Check, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -39,11 +44,13 @@ interface SubmitAnswerFormData {
 export default function QuestionDetailPage() {
   const params = useParams();
   const questionId = params.id as string;
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [answerToDelete, setAnswerToDelete] = useState<number | null>(null);
 
   const { data: session } = useSession();
   const { data, isLoading, error } = useQuestion(questionId);
+
   const createAnswerMutation = useCreateAnswer();
   const acceptAnswerMutation = useAcceptAnswer();
   const deleteAnswerMutation = useDeleteAnswer();
@@ -71,8 +78,8 @@ export default function QuestionDetailPage() {
       });
 
       reset();
-    } catch {
-      
+    } catch (err: unknown) {
+      console.error("Failed to submit answer:", err);
     }
   };
 
@@ -100,6 +107,7 @@ export default function QuestionDetailPage() {
         answerId: answerToDelete,
         questionId,
       });
+
       setDeleteDialogOpen(false);
       setAnswerToDelete(null);
     } catch (err: unknown) {
@@ -122,9 +130,8 @@ export default function QuestionDetailPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {}
-      <div className="bg-card border border-border rounded p-4 sm:p-6 mb-6">
+    <div className="py-6">
+      <GlassCard className="mb-6">
         <div className="flex flex-col gap-6 md:flex-row md:gap-6">
           <div className="flex justify-center md:block md:pt-1">
             <VoteButtons
@@ -151,9 +158,15 @@ export default function QuestionDetailPage() {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                  code(props: React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement> & { inline?: boolean }) {
+                  code(
+                    props: React.ClassAttributes<HTMLElement> &
+                      React.HTMLAttributes<HTMLElement> & {
+                        inline?: boolean;
+                      }
+                  ) {
                     const { className, children, inline } = props;
                     const match = /language-(\w+)/.exec(className || "");
+
                     return !inline && match ? (
                       <SyntaxHighlighter
                         style={vscDarkPlus as { [key: string]: React.CSSProperties }}
@@ -164,9 +177,7 @@ export default function QuestionDetailPage() {
                         {String(children).replace(/\n$/, "")}
                       </SyntaxHighlighter>
                     ) : (
-                      <code
-                        className="bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono"
-                      >
+                      <code className="bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono">
                         {children}
                       </code>
                     );
@@ -177,7 +188,6 @@ export default function QuestionDetailPage() {
               </ReactMarkdown>
             </div>
 
-            {}
             <ImageDisplay imageKeys={question.images} />
 
             <div className="flex items-center gap-2">
@@ -198,9 +208,8 @@ export default function QuestionDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </GlassCard>
 
-      {}
       <div className="mb-6">
         <h2 className="font-heading text-2xl font-bold mb-4 text-card-foreground">
           {question.answers?.length || 0} Answer
@@ -215,9 +224,9 @@ export default function QuestionDetailPage() {
               isQuestionAuthor && !isAnswerAuthor && !answer.isAiGenerated;
 
             return (
-              <div
+              <GlassCard
                 key={answer.id}
-                className={`bg-card border rounded p-4 sm:p-6 ${
+                className={`p-4 sm:p-6 ${
                   answer.isAccepted
                     ? "border-green-500 bg-green-50/50 dark:bg-green-900/10"
                     : "border-border"
@@ -230,6 +239,7 @@ export default function QuestionDetailPage() {
                       itemType="answer"
                       initialVotes={answer.votes}
                     />
+
                     {canAccept && (
                       <Button
                         variant={answer.isAccepted ? "default" : "ghost"}
@@ -261,6 +271,7 @@ export default function QuestionDetailPage() {
                         </Badge>
                       </div>
                     )}
+
                     {answer.isAiGenerated && (
                       <div className="mb-4">
                         <Badge
@@ -277,12 +288,24 @@ export default function QuestionDetailPage() {
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeRaw]}
                         components={{
-                          code(props: React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement> & { inline?: boolean }) {
+                          code(
+                            props: React.ClassAttributes<HTMLElement> &
+                              React.HTMLAttributes<HTMLElement> & {
+                                inline?: boolean;
+                              }
+                          ) {
                             const { className, children, inline } = props;
-                            const match = /language-(\w+)/.exec(className || "");
+                            const match = /language-(\w+)/.exec(
+                              className || ""
+                            );
+
                             return !inline && match ? (
                               <SyntaxHighlighter
-                                style={vscDarkPlus as { [key: string]: React.CSSProperties }}
+                                style={
+                                  vscDarkPlus as {
+                                    [key: string]: React.CSSProperties;
+                                  }
+                                }
                                 language={match[1]}
                                 PreTag="div"
                                 className="rounded-md my-4"
@@ -290,9 +313,7 @@ export default function QuestionDetailPage() {
                                 {String(children).replace(/\n$/, "")}
                               </SyntaxHighlighter>
                             ) : (
-                              <code
-                                className="bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono"
-                              >
+                              <code className="bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono">
                                 {children}
                               </code>
                             );
@@ -309,12 +330,14 @@ export default function QuestionDetailPage() {
                           Answered{" "}
                           {formatDistanceToNow(new Date(answer.createdAt))} ago
                         </span>
+
                         {answer.author && (
                           <span className="text-sm font-medium text-foreground">
                             {answer.author.name}
                           </span>
                         )}
                       </div>
+
                       {isAnswerAuthor && (
                         <Button
                           variant="ghost"
@@ -330,14 +353,13 @@ export default function QuestionDetailPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </GlassCard>
             );
           })}
         </div>
       </div>
 
-      {}
-      <div className="bg-card border border-border rounded p-6">
+      <GlassCard>
         <h3 className="text-xl font-semibold mb-4 text-card-foreground">
           Your Answer
         </h3>
@@ -347,6 +369,7 @@ export default function QuestionDetailPage() {
             <Label htmlFor="content">
               Answer<span className="text-red-500 ml-1">*</span>
             </Label>
+
             <MarkdownEditor
               value={contentValue || ""}
               onChange={(value) => setValue("content", value)}
@@ -354,25 +377,26 @@ export default function QuestionDetailPage() {
               minHeight="200px"
               className="mt-2"
             />
+
             {errors.content && (
               <p className="text-sm text-red-500 mt-1">
                 {errors.content.message}
               </p>
             )}
           </div>
+
           <Button
             type="submit"
             disabled={isSubmitting || createAnswerMutation.isPending}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+            className="glow-button"
           >
             {isSubmitting || createAnswerMutation.isPending
               ? "Submitting..."
               : "Submit Answer"}
           </Button>
         </form>
-      </div>
+      </GlassCard>
 
-      {}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -382,6 +406,7 @@ export default function QuestionDetailPage() {
               undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction

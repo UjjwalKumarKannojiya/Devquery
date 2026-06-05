@@ -2,7 +2,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
-@import "tailwindcss";
 
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
@@ -55,149 +54,128 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE — Clean whites, subtle warmth, professional
+   ═══════════════════════════════════════════════════════════════ */
 :root {
-  /* Backgrounds - Warm off-white theme */
-  --background: oklch(0.985 0.003 95);     /* warm cream */
-  --foreground: oklch(0.15 0.02 250);      /* deep slate blue */
+  --background: #fafafa;
+  --foreground: #0a0a0b;
 
-  /* Card/Surface */
-  --card: oklch(1 0 0);                    /* pure white */
-  --card-foreground: oklch(0.15 0.02 250); /* deep slate blue */
+  --card: #ffffff;
+  --card-foreground: #0a0a0b;
 
-  /* Popover */
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 250);
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0b;
 
-  /* Primary - Using brand green */
-  --primary: oklch(0.18 0.06 145);         /* brand green */
-  --primary-foreground: oklch(0.985 0 0);  /* white */
+  --primary: #4f46e5;              /* indigo-600 */
+  --primary-foreground: #ffffff;
 
-  /* Secondary - Soft warm gray */
-  --secondary: oklch(0.96 0.005 85);       /* warm gray */
-  --secondary-foreground: oklch(0.18 0.06 145); /* brand green */
+  --secondary: #f3f4f6;            /* gray-100 */
+  --secondary-foreground: #1f2937; /* gray-800 */
 
-  /* Muted - Light warm tint */
-  --muted: oklch(0.94 0.008 80);           /* light warm */
-  --muted-foreground: oklch(0.45 0.01 240); /* medium slate */
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;     /* gray-500 */
 
-  /* Accent - Using brand yellow */
-  --accent: oklch(0.92 0.15 95);           /* brand yellow */
-  --accent-foreground: oklch(0.18 0.06 145); /* brand green */
+  --accent: #eef2ff;               /* indigo-50 */
+  --accent-foreground: #3730a3;    /* indigo-800 */
 
-  /* Destructive - Modern red */
-  --destructive: oklch(0.55 0.22 25);      /* modern red */
-  --destructive-foreground: oklch(0.985 0 0);
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
 
-  /* Borders - Soft warm */
-  --border: oklch(0.92 0.008 85);          /* warm border */
-  --input: oklch(0.92 0.008 85);           /* warm input */
-  --ring: oklch(0.18 0.06 145);            /* brand green ring */
+  --border: #e5e7eb;               /* gray-200 */
+  --input: #e5e7eb;
+  --ring: #6366f1;                 /* indigo-500 */
 
-  /* Charts - Using brand colors and complementary */
-  --chart-1: oklch(0.18 0.06 145);         /* brand green */
-  --chart-2: oklch(0.92 0.15 95);          /* brand yellow */
-  --chart-3: oklch(0.65 0.18 220);         /* sky blue */
-  --chart-4: oklch(0.75 0.12 340);         /* coral */
-  --chart-5: oklch(0.55 0.08 280);         /* purple */
+  --chart-1: #6366f1;
+  --chart-2: #06b6d4;
+  --chart-3: #8b5cf6;
+  --chart-4: #f43f5e;
+  --chart-5: #10b981;
 
-  /* Sidebar */
-  --sidebar: oklch(0.99 0.002 90);
-  --sidebar-foreground: oklch(0.15 0.02 250);
-  --sidebar-primary: oklch(0.18 0.06 145);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0.008 80);
-  --sidebar-accent-foreground: oklch(0.18 0.06 145);
-  --sidebar-border: oklch(0.92 0.008 85);
-  --sidebar-ring: oklch(0.18 0.06 145);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0b;
+  --sidebar-primary: #4f46e5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3f4f6;
+  --sidebar-accent-foreground: #1f2937;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #6366f1;
 
-  /* Brand Colors */
-  --brand-green: oklch(0.18 0.06 145);     /* #1a3300 */
-  --brand-yellow: oklch(0.92 0.15 95);     /* #fcec5b */
-  --brand-cream: oklch(0.98 0.01 85);      /* #fdf9f2 */
-  --brand-green-foreground: oklch(0.985 0 0);
-  --brand-yellow-foreground: oklch(0.18 0.06 145);
+  --brand-green: #059669;
+  --brand-yellow: #eab308;
+  --brand-cream: #fefce8;
+  --brand-green-foreground: #ffffff;
+  --brand-yellow-foreground: #0a0a0b;
 
-  /* Prose/Typography Colors */
-  --prose-headings: oklch(0.15 0.02 250);  /* deep slate blue */
-  --prose-body: oklch(0.25 0.02 245);      /* medium slate */
-  --prose-code: oklch(0.18 0.06 145);      /* brand green for code */
-  --prose-links: oklch(0.65 0.15 145);     /* lighter brand green */
-  --prose-links-hover: oklch(0.75 0.08 145); /* hover brand green */
-  --prose-quotes: oklch(0.35 0.02 250);    /* slate for quotes */
+  --prose-headings: #0a0a0b;
+  --prose-body: #374151;
+  --prose-code: #4f46e5;
+  --prose-links: #4f46e5;
+  --prose-links-hover: #6366f1;
+  --prose-quotes: #6b7280;
 
-  /* Radius */
-  --radius: 0.375rem;  /* 6px */
+  --radius: 0.5rem;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — Deep ink/charcoal, luminous accents
+   ═══════════════════════════════════════════════════════════════ */
 .dark {
-  /* Backgrounds - Deep dark slate theme */
-  --background: oklch(0.12 0.01 240);       /* deep slate */
-  --foreground: oklch(0.85 0.01 95);       /* light warm */
+  --background: #09090b;           /* zinc-950 */
+  --foreground: #f4f4f5;           /* zinc-100 */
 
-  /* Card/Surface */
-  --card: oklch(0.15 0.015 230);           /* dark slate card */
-  --card-foreground: oklch(0.85 0.01 95);  /* light warm */
+  --card: #111113;
+  --card-foreground: #f4f4f5;
 
-  /* Popover */
-  --popover: oklch(0.15 0.015 230);
-  --popover-foreground: oklch(0.85 0.01 95);
+  --popover: #111113;
+  --popover-foreground: #f4f4f5;
 
-  /* Primary - Lighter brand green */
-  --primary: oklch(0.75 0.08 145);         /* light brand green */
-  --primary-foreground: oklch(0.12 0.01 240); /* deep slate */
+  --primary: #818cf8;              /* indigo-400 */
+  --primary-foreground: #0a0a0b;
 
-  /* Secondary - Dark warm slate */
-  --secondary: oklch(0.18 0.02 235);       /* dark warm slate */
-  --secondary-foreground: oklch(0.85 0.01 95); /* light warm */
+  --secondary: #1c1c1f;
+  --secondary-foreground: #e4e4e7; /* zinc-200 */
 
-  /* Muted - Medium dark slate */
-  --muted: oklch(0.22 0.025 225);          /* medium dark slate */
-  --muted-foreground: oklch(0.65 0.01 240); /* medium light slate */
+  --muted: #1c1c1f;
+  --muted-foreground: #a1a1aa;     /* zinc-400 */
 
-  /* Accent - Brand yellow for dark mode */
-  --accent: oklch(0.85 0.12 95);           /* bright brand yellow */
-  --accent-foreground: oklch(0.12 0.01 240); /* deep slate */
+  --accent: #1e1b4b;               /* indigo-950 */
+  --accent-foreground: #c7d2fe;    /* indigo-200 */
 
-  /* Destructive - Lighter red for dark mode */
-  --destructive: oklch(0.65 0.18 25);      /* bright red */
-  --destructive-foreground: oklch(0.85 0.01 95);
+  --destructive: #ef4444;
+  --destructive-foreground: #f4f4f5;
 
-  /* Borders - Dark slate */
-  --border: oklch(0.25 0.02 230);          /* dark slate border */
-  --input: oklch(0.25 0.02 230);           /* dark slate input */
-  --ring: oklch(0.75 0.08 145);            /* light brand green ring */
+  --border: #27272a;               /* zinc-800 */
+  --input: #27272a;
+  --ring: #818cf8;                 /* indigo-400 */
 
-  /* Charts - Adjusted for dark mode */
-  --chart-1: oklch(0.75 0.08 145);         /* light brand green */
-  --chart-2: oklch(0.85 0.12 95);          /* light brand yellow */
-  --chart-3: oklch(0.7 0.15 220);          /* bright sky blue */
-  --chart-4: oklch(0.8 0.1 340);           /* bright coral */
-  --chart-5: oklch(0.7 0.1 280);           /* bright purple */
+  --chart-1: #818cf8;
+  --chart-2: #22d3ee;
+  --chart-3: #a78bfa;
+  --chart-4: #fb7185;
+  --chart-5: #34d399;
 
-  /* Sidebar */
-  --sidebar: oklch(0.15 0.015 230);
-  --sidebar-foreground: oklch(0.85 0.01 95);
-  --sidebar-primary: oklch(0.75 0.08 145);
-  --sidebar-primary-foreground: oklch(0.12 0.01 240);
-  --sidebar-accent: oklch(0.22 0.025 225);
-  --sidebar-accent-foreground: oklch(0.85 0.01 95);
-  --sidebar-border: oklch(0.25 0.02 230);
-  --sidebar-ring: oklch(0.75 0.08 145);
+  --sidebar: #111113;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #0a0a0b;
+  --sidebar-accent: #1c1c1f;
+  --sidebar-accent-foreground: #e4e4e7;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #818cf8;
 
-  /* Brand Colors - Enhanced for dark mode */
-  --brand-green: oklch(0.75 0.08 145);     /* lighter brand green */
-  --brand-yellow: oklch(0.85 0.12 95);     /* brighter brand yellow */
-  --brand-cream: oklch(0.9 0.02 85);       /* visible cream */
-  --brand-green-foreground: oklch(0.12 0.01 240);
-  --brand-yellow-foreground: oklch(0.12 0.01 240);
+  --brand-green: #34d399;
+  --brand-yellow: #facc15;
+  --brand-cream: #1c1c1f;
+  --brand-green-foreground: #0a0a0b;
+  --brand-yellow-foreground: #0a0a0b;
 
-  /* Prose/Typography Colors - Dark Mode */
-  --prose-headings: oklch(0.85 0.01 95);   /* light warm for headings */
-  --prose-body: oklch(0.75 0.01 100);      /* medium warm for body */
-  --prose-code: oklch(0.75 0.08 145);      /* light brand green for code */
-  --prose-links: oklch(0.8 0.12 95);       /* brand yellow for links */
-  --prose-links-hover: oklch(0.9 0.15 95); /* brighter brand yellow hover */
-  --prose-quotes: oklch(0.65 0.02 90);     /* warm for quotes */
+  --prose-headings: #f4f4f5;
+  --prose-body: #d4d4d8;
+  --prose-code: #818cf8;
+  --prose-links: #818cf8;
+  --prose-links-hover: #a5b4fc;
+  --prose-quotes: #a1a1aa;
 }
 
 @layer base {
@@ -209,7 +187,49 @@
   }
 }
 
-/* Custom Prose Styles */
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM UI UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Surface — Clean elevated card */
+@utility surface {
+  @apply bg-card border border-border rounded-xl shadow-sm;
+}
+
+/* Surface with hover interaction */
+@utility surface-hover {
+  @apply bg-card border border-border rounded-xl shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30;
+}
+
+/* Glow Button — Primary CTA with gradient */
+@utility glow-button {
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
+  @apply text-white font-semibold rounded-lg px-6 py-2.5 shadow-md transition-all duration-200;
+}
+.glow-button:hover {
+  background: linear-gradient(135deg, #4f46e5, #0891b2);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.glow-button:active {
+  transform: scale(0.98);
+}
+
+/* Gradient text — visible in BOTH themes */
+@utility glow-text {
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Keep glass-card as alias for surface (backward compat for any missed references) */
+@utility glass-card {
+  @apply bg-card border border-border rounded-xl shadow-sm;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROSE / TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════════ */
 .prose-brand {
   color: var(--prose-body);
 }
@@ -282,26 +302,4 @@
 
 .prose-brand td {
   border-color: var(--border);
-}
-
-@utility glass {
-  @apply bg-background/60 backdrop-blur-md border border-border/50 shadow-lg;
-}
-
-@utility glass-card {
-  @apply bg-card/40 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
-}
-
-@utility liquid-glass {
-  @apply bg-linear-to-br from-white/40 to-white/10 backdrop-blur-2xl border border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-2xl relative overflow-hidden;
-}
-.liquid-glass::before {
-  content: '';
-  @apply absolute inset-0 bg-linear-to-tr from-transparent via-white/20 to-transparent pointer-events-none;
-}
-.dark .liquid-glass {
-  @apply from-black/40 to-black/10 border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)];
-}
-.dark .liquid-glass::before {
-  @apply via-white/5;
 }

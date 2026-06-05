@@ -2,7 +2,7 @@
 
 import { sendWelcomeEmailEvent } from "@/app/actions/auth-actions";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import GlassCard from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp } from "@/lib/auth/client";
@@ -84,8 +84,13 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 px-4 sm:px-0">
-      <Card className="p-6 sm:p-8">
+    <section className="relative min-h-screen flex flex-col justify-center glass overflow-hidden py-12">
+      <div className="absolute inset-0 -z-10">
+        <div className="w-72 h-72 bg-blue-500 rounded-full opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="w-72 h-72 bg-purple-500 rounded-full opacity-30 animate-blob animation-delay-4000"></div>
+      </div>
+      <div className="max-w-md w-full mx-auto px-4 sm:px-0">
+        <GlassCard className="p-6 sm:p-8">
         <h1 className="text-3xl font-bold mb-2 text-center">Create Account</h1>
         <p className="text-muted-foreground mb-6 text-center">
           Join the DevQuery community
@@ -164,7 +169,7 @@ export default function SignUpPage() {
             </p>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full liquid-glass text-white font-semibold py-2.5" disabled={isSubmitting}>
             {isSubmitting ? "Creating account..." : "Create Account"}
           </Button>
         </form>
@@ -231,8 +236,9 @@ export default function SignUpPage() {
             Sign in
           </Link>
         </p>
-      </Card>
-    </div>
+        </GlassCard>
+      </div>
+    </section>
   );
 }
 
